@@ -1,0 +1,59 @@
+#                                                                                       Jenkins -3(5)
+#                                                                                      ---------------
+# Build with perameters -:
+--------------------------
+ > Instead of creating multiple jobs for different environemets we can create one job and we can give that values when it's trigering the jobs. How to do that ?
+ > We have a multiple jobs right so click on one job > Click on configure > in General choose option called (This project is parameterized) > click on add perameter,
+ > we have many perameters > Choose choice perameter > give the name (any-name(ex-branchnames(it's a varaible) this name we provide under Branch specifier under git url in jenkins job), 
+ > Under choices > provide git branch names one by one(vertically),
+ > Now remove the hardcoded branch name if anything exists and provide this variable under SCM(Branch specifier) */${branchnames}.
+ > Now save the job and now we can see the option called Build with perameter > Click on it now we can see branches names choose the branch name and click on build.
+ > Now go and see the console output.
+ > Like this we can pass multiple perameters.
+ 
+# If you wanna list/ Navigate a specific project jobs or you wanna keep the specific project job details in some unique place for quick access how  can we do -:
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+ > In Jenkins Dashboard > Click on (+) Symbol >  CreateView(provide view name(project name) > choose list view > choose which jobs you wanna display under (Job filter options) > Click on Ok.
+ > Now we can see the view details (besides All) in a Jenkins dashboard > It's going to display only our selected jobs.
+ > Instead of going and searching all jobs we can create a list view and we can see all required jobs in one place.
+ > like that we can create multiple views for our jobs views by clicking (+) and provide the details.
+ > If you wanna edit the existing view list > leftside we have an option called Edit view > click on Edit view > and do changes and click on ok.
+ > If you wanna delete the view we have an option called delete view on left side, if we delete the view the view only delted job is not delete.
+ 
+ > NOTE -: Views are very useful to navigate whatever the projects we are working.
+ 
+# Jenkins Security -:
+--------------------
+ > For example we have a multiple users so how can we secure our jenkins with specific permisions.
+ 
+ > Create 4 users -:
+--------------------
+  > On Jenkins Dashboard > Click on manage jenkins > click on manage  users > click on create user > and provide required details (name,set passwds,and full name, e-mail) like create 4 users > Click on create user.
+  > So if i logout from admin account and login with recenty created user, that recent user will also can access everything, it's not a good practice so as an admin i wanna give the limited access to that users.
+  > So i login my admin account > Click on manage jenkins > Click on Configure Global Security >   Under Authentication > Under seurity Realm by default it marked as a {Jenkins own user database} (It means the user data is store in jenkins DB).
+  > In Real time we won't be use the jenkins DB. We are going to integrate with {LDAP} server.
+  > For Today practice we use Jenkins DB.
+  
+#  > Under Authorization -:
+   ------------------------
+    > We have a differnt options are available inside this Autherization section Like,
+    
+    > Anyone can do anything  > Legacy mode > Logged-in users can do anything > Allow anonymous read access > Matrix-based security > Project-based Matrix authorization Stategy > Role Based access( For this we need to install requied plugin).
+    > For Today practice we use {Project based Matrix authorization strategy} > Click on it > click on add user > Give the users names (which we created before) > then give access to users using check boxes > click on Save 
+    > Now logout from admin and login as a user > now we can see only limited resorce access.
+	 
+ # > Now my requirement is i have two users 1st user can see only Flipkart jobs only and 2nd user can only see maven jobs only how can we do this -:
+ ---------------------------------------------------------------------------------------------------------------------------------------------------
+        > Login to Jenkins Dashboard > Login as an admin user > Go to manage Jenkins > Go to Configure Global Security > under authorization in job & view section disable all access > under Overall we just give/selct a read access > Click on save,
+	> Come Back to Jenkins Dashboard > Click on Jenkins job(which you wanna restrict access) > Now Clcik on configure > In General under Jira Site ( we can see { Enable Project-Based Security}) > click on it > Now we get ACL Dashboard,
+	> Click on add user or group > add user and provide access and save > Like that which jobs you wanna provide access go to each job and provide the access to that user.
+	> So If i login with that users we can see only limted access resource list.
+ 
+# What is the Use of configuring with LDAP Server with Jenkins server -:
+------------------------------------------------------------------------
+ > If we don't wanna create users manually  we use this LDAP server. In LDAP serever Ex 100 employees are there by default that 100 users can access all the services in jenkins once we configure LDAP with jenkins Server.
+ > But We need to restrict the access.
+  
+# > Where these user information is stored/which file  -:
+---------------------------------------------------------
+   > /var/lib/jenkins/users   > ls  > cat users.xml
