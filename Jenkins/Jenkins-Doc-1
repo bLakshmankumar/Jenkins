@@ -74,7 +74,49 @@
  > Jenkins  --> Community Edition (CE) -: it's a free here we can't get an immediate Support.
  > Cloudbees Jenkins --> Enterprise Edition (EE) -: Here we need to take a licence, and if we have any issues we will get an immediate support.
  
+
+# How to change a port number of jenkins -:
+------------------------------------------------------
+ > By default Port nums of Tomcat/JBoss/Jenkins are - 8080.
+ > For Jenkins we use file called jenkins file under /etc/systemconfig.( - Redhat).
+ > For Jenkins we use file called jenkins file under /etc/default. - (ubuntu).
+ > Open This File and we can update the port number and we can update the jenkins home path and jenkins user.
+ > If we do any change in Jenkins file we need to restart the jenkins (systemctl restart jenkins).
+ 
+# Practical implimentation -:
+-----------------------------
+ > Log in to jenkins server in linux > sudo su - > cd /etc/systemconfig > pwd > vi jenkins > change the port and save the file > Restart jenkins (systemctl restart jenkins)> Try to access with new port.
+ 
+# For Tomcat Which file we are using -:
+---------------------------------------
+  > Tomcat  - Server.xml 
+
+# Is it possible to give custom path for jenkins home directory -: 
+--------------------------------------------------------------------------------
+ > yes we can update our own custom path for jenkins configuration file inside jenkins file under /etc/systemconfig(Redhat), /etc/default(Ubuntu).
+ > Restart the jenkins.
+
+
 # Installation of jenkins -:
 ----------------------------
  > Go to Google > Search jenkins download > choose jenkins.io(jenkins download and deployment) 
  > Here we have two things (one is Download jenkins 2.249.2 LTS(Long Term Support). (Another is Download jenkins 2.264). > Choose/click on the platform(windows,linux (redhat, debian, centos,mac).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
