@@ -54,6 +54,8 @@
  > If we don't wanna create users manually  we use this LDAP server. In LDAP serever Ex 100 employees are there by default that 100 users can access all the services in jenkins once we configure LDAP with jenkins Server.
  > But We need to restrict the access.
   
-# > Where these user information is stored/which file  -:
----------------------------------------------------------
-   > /var/lib/jenkins/users   > ls  > cat users.xml
+#  Where these user information is stored/which file -:
+--------------------------------------------------------
+   > /var/lib/jenkins/users 
+   > ls
+   > cat users.xml
