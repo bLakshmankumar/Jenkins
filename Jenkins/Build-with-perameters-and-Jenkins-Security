@@ -2,7 +2,7 @@
 #                                                                                      ---------------
 # Build with perameters -:
 --------------------------
- > Instead of creating multiple jobs for different environemets we can create one job and we can give that values when it's trigering the jobs. How to do that ?
+ > Instead of creating multiple jobs for different environemets(Like Dev,Test,Pre-prod,Prod) we can create one job and we can give that values when it's trigering the jobs. How to do that ?
  > We have a multiple jobs right so click on one job > Click on configure > in General choose option called (This project is parameterized) > click on add perameter,
  > we have many perameters > Choose choice perameter > give the name (any-name(ex-branchnames(it's a varaible) this name we provide under Branch specifier under git url in jenkins job), 
  > Under choices > provide git branch names one by one(vertically),
