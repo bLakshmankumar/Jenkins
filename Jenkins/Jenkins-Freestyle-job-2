@@ -1,0 +1,71 @@
+#                                                                                 Jenkins - 2
+#                                                                               ---------------
+
+# Create a freestyle job in jenkins -: (Manual)
+-----------------------------------------------
+#  Login to jenkins > Click on New Item > Give the name( Project name - env name(Dev) > Choose freestyle > choose SCM git > Give the repo Url > Provide credencials > Choose the branch > go to under build > choose invoke top-level maven target > give maven command inside Goal (clean package).
+# Click on save > click on build.
+
+# How to install maven in jenkins as a admin-:
+----------------------------------------------
+ > Open Jenkins > Click on Manage Jenkins > Click on Global Tool Configuration > Choose maven (Click on add maven) > Give the name(any name) > choose the version > we can choose multiple versions here > click on save.
+ > If we do this kind of maven installation it'll help us for build a differnt jobs with differnt versions. and this is the best practice. and if you wanna install maven in jenkins linux server we can insatall using linux commands. but it's not  a good practice bcs when we do a build it'll take a dafaul tversion.
+ > we can see under build (invoke top-level maven target) option in jenkins.   
+
+# what is jenkisn Home Directory -:
+-----------------------------------
+  > /var/lib/jenkins  > This is the jenkins Home Directory.(Where jenkins is installed).
+  
+# Where is our build package is stored -:
+-----------------------------------------
+ /var/lib/jenkins/workspace/job-name/target/maven-web-app.war
+ 
+# Where we gonna configure our SonarQube details -:
+----------------------------------------------------
+ > We have to configure our sonarqube details inside a Pom.xml file.
+ > First go to sonarqube server and copy the SonarQube Url IP:Port > Go to Github repo and go to your branch(ex-Dev) >  go to Pom.xml > where sonar url replace with new url.
+ > Now Go to jenkins Dashboard > click on configure > Go to Build step > Goal ( clean package sonar:sonar) > save and apply > click on build now.
+ > Now go to Console output and check the result and if success and go to SonarQube Dashboard here we can see the project details.
+ 
+# How to configure our nexus repository into our project -:
+-------------------------------------------------------------------------
+  > We have to configure our Nexus details inside a Pom.xml file.
+  > Login to jenkins server in linux > su - root > cd /var/lib/jenkins > ls -d tools > cd tools > ls > cd hudson.tasks > ls >  we can see the versions which we are use in global tool configuration > cd maven version > cd conf > vi setting.xml > go serevrs tag > go to server closing tag (/serevers) > tops of that tag provide this below information.
+     <server>
+	 <id> nexus</id>
+	 <username>**********</username>
+	 <password>**********</password>
+	 </server>
+	 
+  > First Go to Nexus Server dashboard > Login to nexus dashboard >  Click on copy of our release repository and snapshot repo > go to git hub repository and choose the currect branch (ex-dev) > open pom.xml > inside under distribution management and replace both release and snapshot repo urls with new one > click on commit changes.
+  > Now go to jenkins console and click on configure > change the build goal (clean sonar:sonar deploy) > click on build > go to console output and check the status > Go to nexus repo and check the package.
+  
+# How to deploy our application on tomat container -:
+------------------------------------------------------
+   > First log in to tomcat server in linux > sudo su - > cd /opt/tomcat/conf > ls > vi tomcat-users.xml >  in last after admin-gui, add manager-script > save the file
+   > check that our tomcat server is up and running > Login to Tomcat dashboard > copy the ip:port > Now Go back to jenkins Dashboard > Go to Your Job > Click on the configure > Go to post Build Actions > Choose Deploy war/ear to a container > Choose WAR/EAR files (**/maven-web-app.war(path) > Under conatainers option (add container), Choose the version > Provide Tomcat server URL > Provide tomcat server credencials.
+   > Save and apply > click on build now > Check the console output..
+ 
+# How to update a Timestamp to my console output -:
+---------------------------------------------------
+ > Go to your job > Click on configure > Under Build Environement we have an option called (add timestamp to the console output) > click on save and apply > click on build now > click on console output > Now we can see the timestamp.
+ 
+# How maintain a few builds only -:
+-----------------------------------
+  > Go to Jenkins Dashboard > In General Choose a Disacard old builds > Provide the details for Days to keep the builds (ex-5)  and Max of builds to keep (5) > Click on advance > max # of builds to keep with artifacts (5) (if not give 5 here it's just going to maintain a build information only it's not going to maintain artifacts).
+  > Save and apply & click on build now > once build is done > now we can see the last 5 builds only.
+  
+# How to automate job Builds -:
+-------------------------------
+ > using build trigger optioins we can automate the bild process.
+ > we have different build  trigger options (Build Perioducally, Poll Scm, GitHub webhook trigger) (minutes, hours, Dayofthemonth, month, day of week).
+ 
+ 
+# How poll scm check the updated source code-:
+----------------------------------------------
+ > Using commit id it check the updated information.
+ 
+# What we have to do if we forget the jenkins password -:
+---------------------------------------------------------
+  > go to /var/lib/jenkins > Here we have a file called Config.xml > if we open that config.xml file > we can see one tag in line num 8 > <useSecurity>true(change this value true to false</useSecurity> and now we can  restart jenkins service > now it's not asking credencials we can directly login to jenkins service > You can reset our password and go back to config.xml and change the <useSecurity>false to True </useSecurity> and restart the jenkins service.
+  

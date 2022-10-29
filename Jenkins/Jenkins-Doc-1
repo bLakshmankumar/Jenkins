@@ -1,0 +1,80 @@
+#                                                                                  Jenkins -1
+#                                                                                ----------------
+# What is jenkins -:
+-------------------
+ > jenkins is a opensource java based CI tool. ( It's written in Java but it supports any language).
+ > This tool simplifies the process of integration of changes in to the project and delivery of fresh builds to users.
+ 
+# History of jenkins -:
+-----------------------
+ > The initial name of jenkins is Hudson This hudson is developed in 2004 by the Oracle Company.
+ > whoever develop this hudson they cameout from the oracle company in 2011 and they started jenkins community and they created jenkins.
+ > jenkins is developed by jenkins community.
+ 
+# What Jenkins Can Do -:
+------------------------
+ > Integrate with many different Version Control Systems (GitHub, CVS, SVN, TFS...).
+ > Generate test reports (Junit). (Means How many Test cases and How much Code Coverage)(for that it's going to use one plugin (jacoco(java code coverage plugin)).
+ > Push the builds to Various artifact repositories.
+ > Deploy directly to production or test environment.
+ > Notify stakeholders of builds status ( Through Email). > Once build is done it's send a mail to the stakeholders(Clients).
+ 
+# What is CI -:
+---------------
+ > CI is the process of automating the testing and build of code every time a team member commits changes to version control.
+ > CI = C Testing + C Build ( First it test and build the code, build means creating a package).
+ 
+# Benifits With CI -:
+---------------------
+  > Immidiate Bug detection*. 
+  > No Integration step in the software development lifecycle. 
+  > A Deployable system at any given point.
+  > Record of evolution of the project.
+  
+# Continues Deployment -:
+-------------------------
+  > Continues Deployment we no need to do any manual steps for deploy our app to production environment.
+  > Continues Deployment mostly we are using in  in house/internal projects(with in a company (like using our internal employees)).
+  
+ # Continues Delivery -:
+ -----------------------
+   > Continues Delivery we do automate the deployment process to Pre-production environment for production we do take a approval.
+   > Continues Delivery Mostly using for External projects where outside users are accessing our applicatrions.(Flipkart, Wallmart).
+   
+# Imp Plugins in Jenkins -:
+---------------------------
+# > Jacoco (Java code coverage) -: By using this plugin we can generate the reports and we can stop the deployment if it's not happening the code coverage whatever the threshold value we are expecting. For ex we expecting threshold value 90% if it's not reach 90% it'll stop the deployment.
+# > Deploy to container -: If we wanna deploy our application on tomcat container we use this plugin.
+# > Deploy weblogic -:
+# > Maven Integration -:
+# > Safe Restart -:
+# > Next Vuild Number -:
+# > SSH Agent -:
+# > Email Extention -:
+# > SonarQube Scanner -:
+# > Audit Trail Plugin -:
+# > Schedule Build -:
+# > Artifactory Plugin -:
+# > Cloud Foundry -:
+# > Blue Ocean -:
+# > Publish Over SSH -:
+# > ThinBackup -:
+# > Build Number Setter -:
+# > Convert To Pipeline -:
+
+# Benifits of Jenkins -:
+------------------------
+ > It's an opensource tool with great community support.
+ > It has around 1500 + Plugins to ease our work. If a plugin doesn't exist or the plugins not working for our requirments, then we can develop our own plugins and we can save that plugin to the jenkins community and they are updating to the plugins.
+ > we can see all available plugins list under (https://plugins.jenkins.io).
+ > It's built with java and hence, it is portable on al major platforms.(Linux, windows, mac).
+ 
+# we have two editions in jenkins -:
+------------------------------------
+ > Jenkins  --> Community Edition (CE) -: it's a free here we can't get an immediate Support.
+ > Cloudbees Jenkins --> Enterprise Edition (EE) -: Here we need to take a licence, and if we have any issues we will get an immediate support.
+ 
+# Installation of jenkins -:
+----------------------------
+ > Go to Google > Search jenkins download > choose jenkins.io(jenkins download and deployment) 
+ > Here we have two things (one is Download jenkins 2.249.2 LTS(Long Term Support). (Another is Download jenkins 2.264). > Choose/click on the platform(windows,linux (redhat, debian, centos,mac).
