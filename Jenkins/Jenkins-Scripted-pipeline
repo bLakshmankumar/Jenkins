@@ -1,0 +1,194 @@
+#                                                                       Jenkins Scripted Pipeline
+#                                                                     -----------------------------
+
+# Types of Pipeline Script -:
+-----------------------------
+ > Scripted Pipeline
+ > Declarative Pipeline
+ 
+# How to Write a Scripted Pipeline -:
+-------------------------------------
+ > Open Jenkins Dashboard > Click On new item > Provide Job name > Choose Pipeline Option >  Go to pipeline section >
+ 
+ node('node1') -: provide node name where we have to execute this script (if we not mention any node info here by default it executes on jenkins master)
+ (OR)
+
+node 
+ {
+  
+   def mavenHome =  tool name: "maven3.6.2"  # (This is the best practice to declair variables in node level).
+  # Note(we can provide this variable inside build stage also but if we mention in build stage instead of here it's working within that stage only it won't works on other stages.)
+  # Provide the poll scm script inside the node level only.
+  stage('CheckoutCode")
+  { 
+    which we created using Pipeline syntax (snippet generator) for checkout (git clone) Paste here 
+  }
+  
+  stage('Build')
+  {
+      #def mavenHome =  tool name: "maven3.6.2"  ( if we mention here we can call it as a local variable, it'll work with is this stage only if we provide this variable in other stage it won't be work.).
+      sh "${mavenHome}/bin/mvn clean package" 
+  }
+  
+  stage ('ExecuteSoanrQubeReport')
+  {
+       sh "${mavenHome}/bin/mvn sonar:sonar"
+  }
+  
+   stage ('UploadArtifactintoNexus')
+  {
+       sh "${mavenHome}/bin/mvn deploy"
+  }
+   stage ('DeployApplicationOnTomcat')
+   {
+    sshagent{['78645165-545l5-5d5-8sd4d4w']} 
+	{
+    sh "scp -o StrictHostKeyChecking=no target/maven-web-app.war ec2-user@tomcatpublicip:/opt/apace-tomcat-9.0.39/webapps"
+	}
+   }
+   stage ('SendEmailNotification')
+   {
+      mail bcc: '', body: ''Build Over ..
+	  
+	  Regards,
+	  name,
+	  mobile num, ' ', cc: & etc  (paste the content which we create using groovy syntax.)(mail:Mail).
+   }
+ }
+
+#why we need Node -:
+#------------------
+ > In scripted  we starts with node with ({}), in between these ({}) we are going to write our CI/CD Pipeline.
+ > The node represents that where our script should execute(on which node). we have to mention the node name where this script should execute.
+ 
+#Stage -CheckoutCode -:
+#----------------------
+ > If we don't mention the node name here by default it'll execute the script on master node(our main jenkins server).
+ > Each task we create a stage. and provide a name for identification.
+ > If we click on pipeline syntax it'll taking to another new tab > Click on snippet generator > under sample script we can see multiple options > choose git-Git >
+ > Provide the Git repo Url > Give the branch name > choose credentials > Click on generate pipeline script > Copy and paste on checkout stage inside Flower Brackets{}.
+ 
+#Stage -Build -:
+#---------------
+ > We actually using Groovy script Syntax for creating a pipeline so when we execute any commands we need to follow some syntax depends on OS.
+ > For build we have to execute the command with (sh). If our jenkins is running in our Linux operating system that time we should use - sh. 
+ > sh "mvn clean package". 
+ > If our jenkins is running in our windows operating system that time can we use sh ?  no That time we have to use (bat)
+ > node,stage names shoud be in lower case charectors and with in these () we can use upper case charectors.
+ > Save and click on build 
+ 
+#Error 1-:
+#---------
+ > I create two stages checkout & build and i click on build but i got an 127 error (mvn command is not found).
+ > Means it's trying to execute the mvn command but it's saying that mvn command is not found.
+ > Because I Installed in maven in my Jenkins server(Inside a jenkins global tool configuration) but i'm not installed maven in my linux server.
+ > I don't wanna install maven in linux server. Instead of going to linux and install maven in linux,
+
+#Solution -:
+#-----------
+ > i just wanna use whatever the maven which i have been installed in Jenkins. so for that i'm connecting to my jenkins server using ssh.
+ > sudo su - > cd /var/lib/jenkins/tools > ls > cd hudson tab > ls > cd maven > cd maven version > Here my mvn command is there > pwd > This our maven home directory. copy this path > ls > cd bin > ls (my maven commands are available /bin here)
+ > So How to get this maven home directory path ?   >   for that one i going to create one variable.
+ > If you wanna define any variable or function in groovy script  we are going to use one keyword called (def) and give the variable name mavenHome.
+ > def mavenHome(this is a variable, and give any name) =  tool name: "maven3.6.2" (whatever the name we given when we confingure maven in jenkins Global tool configurations under maven whatever the name we provide we need to provide that name here.).
+ > we provide a varible name mavenHome but how this variable get the value ${mavenHome}/bin/mvn clean package (Now it's go to that path and and verify the maven command in bin and execute the mvn command).
+ > We create a variable under node using def and provide that variable with build command inside a build stage.
+ > so provide this variable syntax with build command under build stage (sh "${mavenHome}/bin/mvn clean package"). Now save and click on build now > now it's processed successfully > it created a package successfully.
+
+#Stage - SonarReport -:
+#----------------------
+  > We directly execute the sonar command using sh -:  sh "${mavenHome}/bin/mvn sonar:sonar"
+
+#Stage - UploadArtifactintoNexus -:
+#----------------------------------
+  > We directly execute the deploy command using sh -:  sh "${mavenHome}/bin/mvn deploy"
+  > But we got an error.
+  
+#Error -2 -:
+#------------
+ > When i do the build after creating Artifact stage i got an error called  failed to deploy goal with 401 error code. (means authentication (unauthorization error)).
+
+#Solution -:
+#-----------
+ > login to jenkins server > sudo su - > cd /var/lib/jenkins/tools/hudson/maven version/conf/ > ls (Here we can see setting.xml).
+ > vi settings.xml > search with <servers> tag > before closing the server tag (</servers>) > 
+ > <server>
+	 <id> nexus</id>
+	 <username>**********</username>   -: update the artifactory credencial details 
+	 <password>**********</password>    -: update the artifactory credencial details
+	 </server>
+ > Save (esc, Shift:,wq!).
+ > click on build now > it executes successfully > go to artifactory repo and check the repo details.
+ 
+> What is the meaning of deploy the application -:
+-------------------------------------------------------------
+   > deploying the application is ntg but a copying the war file into webapps directory.
+   
+> Issue at Deploy stage -:
+-------------------------------
+ > I have a war file in Jenkins server and i have a webapp folder in Tomcat server 
+ > Both are different linux servers so how can i copy that war file from jenkins server into webapps directory in tomcat server ? (Using SCP).
+ 
+ > When we execute scp command we need to use some syntax right that syntax is -:
+ ---------------------------------------------------------------------------------------------------------
+  > scp filename username@target server hostname/ipaddress:/.../webapps/(where we want to store that war).
+  
+  > Once we execute this command jenkins it's going to ask the password, so jenkins is not able to remember all the passwords.
+  > So for that what we are going to do is ? 
+  > we are going to generate one token and we are going to configure in target server. 
+  > So for that first we need to install ssh agent plugin. 
+  > Go to jenkins dashboard > manage jenkins > manage plugins > go to available > search ssh agent > install without restart > refresh the page.
+  > Click on your job > click on pipeline syntax it'll taking to another new tab > Click on snippet generator > under sample script we can see the ssh agent.
+  > Click on add credentials > Provide description(Tomcat-linux-server-cred) > choose SSH tomcat serever username with private key > provide username > seclect enter directly > click on Add >, now open tomcat server in linux, 
+  > Open gitbash > go to the directory where our pem file is located in tomcat server > cat tomcat.pem > copy the content > Go back to your jenkins server > paste that content here(on jenkins credintials).
+  > Click on add > Click on Generate Pipeline Script > Copy and we provide this logic script inside the deploy stage.
+  > sh "scp target/maven-web-app.war ec2-user@tomcatpublicip:/provide webapps path in tomcat
+  > But when we use ssh between to servers it's asking yes/no oprion so i don't want that option what i do for that?
+  > for that i use (scp -o StrictHostKeyChecking=no) this option. now it won't ask.
+  > Now go to your job > go to configure and check the pipeline and click on build now.
+ 
+#Error -3 at deploy stage -:
+#---------------------------
+ > While deploy my application on tomcat serever i got an permission denied error. 
+ > Bcs when we copying that war file from jenkins serever to webapps folder in tomcat server we use ec2-user.
+
+# Solution -:
+# ------------
+ > If you log in to tomcat serever in linux and go to /opt/apace-tomcat-9/ > ls -l > if you check the permissions to the webapps directory > who is the owner (Root is the owner for that directory).
+ > The ec2-user don't have permissions to copy the file to webapps directory.
+ > For that i'm going to give a permisions to that ec2-user (chmod -R 777 webapps).
+ > Now go and do the build now.
+ >  It's deployed sucessfully.
+ 
+# Final Stage - email notification-:
+#-----------------------------------
+  > Go to jenkins Dashboard > Click on manage jenkins > Click on configure System > Scroll down to E-mail notification >  provide require details(SMTP server - 9smtp.gmail.com) > click on advance.
+  > Give Username > Set password > use Tick mark the SSL > SMTP PORT 465 > Charset UTF-8 - Tick the Test configuration by sending test e-mail > Test e-mail recipient (provide email) > click on test configuration. 
+  > Go to your job > Click on your job > Click on Configure > Go to pipeline > choose pipeline syntax > choose mail:mail option ( provide To, cc, Body details) > click on create generate script.
+  > copy that generated scipt and paste on your pipeline script & click on build now.
+#------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ 
+# > How to enable a poll scm through script -:
+#---------------------------------------------
+  > go to your job > click on pipeline > choose pipeline syntax > choose option called (properties set job properties) > choose discard old builds > set max of builds to keep > click on advance max of builds to keep with artifacts.
+  > Under Build Triggers > Choose Poll SCM > Give Time slot > click on genrate pipeline script > Copy that script and go back to yout job > go to configure > go to pipeline > paste on under node level only > don't paste on stage levels.
+  > Now let's see it'll automatically trigger the job at a sheduled time. 
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# Using Git Clone the existing pipeline script -:
+# -----------------------------------------------
+> First Go to git hub repo > Create a file > choose a branch > provide name (anyname) > paste all the pipeline to this file > save the file.
+
+#> How to build a jobs from Git hub repo -:
+#------------------------------------------
+ > Under pipeline choose the git hub repo 
+ > provide url (where pipeline is available(which branch)
+ > provide the pipeline path.
+ > it'll automatically build using poll scm.
+
+# > Error Codes -: 
+#-----------------
+  > 401 > Unathorization Error  > 
+  > 403 > Forbidden Error       >  No permissions 
+  > 127 > Command not found     > 
