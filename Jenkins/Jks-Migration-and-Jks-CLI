@@ -1,0 +1,228 @@
+#                                                                Jenkins Migration -9
+#                                                             --------------------------
+# > For ex assume my old jenkins server is available in aws cloud, now i wanna migrate my old jenkins server to Google cloud -:
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+# How to migrate all the jobs from old jenkins server to new jenkins server -:
+-------------------------------------------------------------------------------------------------
+# we can do this in two ways -:
+# ------------------------------------
+# First way -:
+-----------------
+#  > First we have install same jenkins version(which we using in aws) in Google Cloud.
+#  > Once we install same version in Google Cloud It'll create an one default jenkins Home directory (/var/lib/jenkins) in Google server.
+#  > This Jenkins directory contains all our jenkins related configuration information.
+#  > After crating this new jenkins directory we can rename it, then whatever the jenkins directory we have in the old jenkins server in aws, we can copy to Google cloud new jenkins directory in new jenkins server.
+
+# Second way -:
+-------------------
+# > Assume we don't have an access to the our old jenkins server then how you go to migrate it to new jenkins server ?
+----------------------------------------------------------------------------------------------------------------------------------------------------
+# > By using Job import Plugin we can achive this kind of requirement.
+# > We have to install this Job import plugin on our new/target jenkins server(google cloud).
+# > Once we install this plugin it's going to ask that from which jenkins server you want to copy and that jenkins server URl, Username & Password we need to provide here.
+
+
+#                                                                   :- Jenkins CLI -:
+#                                                                 --------------------
+# > Actually We do create jobs and do builds using jenkins UI, and also We can automate this job using jenkins CLI too.
+
+# Prerequisites for Using Jenkins-CLI -:
+----------------------------------------
+ > First we need to download the jenkins-cli jar file.
+ > with help of that war file only we can able to use the Jenkins-CLI 
+
+# Process to Access Jenkins CLI -:
+----------------------------------
+# > We have a jenkins URL nah > So what we need to do is, use CLI after jenkins URL (jenkins Ip:port/cli)(3.14.84.84:8080/cli) > now we can see the jenkisn CLI dashboard.
+# > Click on jenkins-cli.jar > It'll going to download the jar file > Go to download Folder > move that jenkins cli jar file to another secure directory.
+# > open the terminal > go to that jenkins-cli.jar path > now i wanna access this jenkins through command prompt what we need to do ?
+# > For that first we need to authenticate the jenkins server, for that we need to execute this  command ( java -jar jenkins-cli.jar -auth username:password/token -s http://3.14.84.84:8080/) (Best practice is provide a Token)
+# > we get the commands information for creating jobs and create-view and disconnect node & etc.
+# > Whatever we can do in Jenkins GUI We can do on Jenkins CLI too using these Commands.
+# > java -jar jenkins-cli.jar -s http://3.14.84.84:8080/ -help(command). ( we will get this command when we execute "jenkins Ip:port/cli" on browser).
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+# > How can we access this jenkins-CLI through command prompt -:
+----------------------------------------------------------------
+# > For that first we need to authenticate but how can we authenticate our details ? -:
+--------------------------------------------------------------------------------------- 
+# > By Using this command we can authenticate our credentials > java -jar jenkins-cli.jar -auth username:password/token -s http://3.14.84.84:8080/
+
+# > Note -:
+----------
+# > This is not a best practice to pass the credentials directly on the command so instead of that one we can generate the token for this user.
+
+# How to generate the token & change the password of an user -:
+---------------------------------------------------------------
+# > Go to Jenkins Dashboard >click on people(users list)(It'll list all the users list) > click on the user > Click on configure > Go To API Token > Click on add token > Give the name > Click on Generate > Copy that token and save on some secure place.
+# > Now instead of Password we can use this token. 
+# > We can change the password of an user here.
+
+# >How can we trigger jobs in jenkins-CLI -:
+--------------------------------------------
+# > java -jar jenkins-cli.jar -auth username:password/token -s http://3.14.84.84:8080/ build(command)  give-job-name
+
+# > If you wanna delete the job -:
+---------------------------------
+# > java -jar jenkins-cli.jar -auth username:password/token -s http://3.14.84.84:8080/ delete-jobcommand)  give-job-name
+
+# If you wanna see the Jenkins CLI Commands -:
+----------------------------------------------
+# > java -jar jenkins-cli.jar -s http://3.14.84.84:8080/ -help(command)  -: we will get an Jenkins CLI Commands.
+
+# How to list a jobs using Jenkins-CLI -:
+--------------------------------------------------
+# >  java -jar jenkins-cli.jar -auth username:token -s http://3.14.84.84:8080/ list-jobs
+-----------------------------------------------------------------------------------------
+
+#> Each time we don't wanna execute this command we wanna do this automate we can create a shell script -:
+----------------------------------------------------------------------------------------------------------
+
+# Write a shell script for list all jobs -:
+-------------------------------------------
+# > we can srite a shell script for list all jobs instead of using jenkins-CLI Commands.
+
+# Starts -: (vi display.sh)
+----------------------------
+#!/bin/bash
+
+echo "Displaying all the jobs in jenkins serever"
+java -jar ./jenkins-cli.jar -auth username:token -s http://3.14.84.84:8080/ list-jobs
+echo "Displayed......"
+
+#          (or)
+
+#!/bin/bash
+jenkinsURL= http://3.14.84.84:8080/
+jenkinsUsername=jenkins-CLIuser
+jenkinsToken=65d65ddd15d15cd1cd1
+
+echo "Displaying all the jobs in jenkins serever"
+java -jar ./jenkins-cli.jar -auth jenkinsUsername:jenkinsToken -s jenkinsURL list-jobs
+echo "Displayed......"
+
+Note -:
+--------
+# This file should be move/keep at where your jenkins-cli.jar.
+# (./) > why we this means whatever i'm writing the script and this ./jenkins-cli.jar bothe are there in the same directory.
+# Save it (esc, shift:,wq!).
+# and execute this file(sh display.sh) like this we can write a shell script for other tasks using relevent commands.
+# Don'y hardcode the values directly it's not a good practice. Instead of hardcoding the values directly we can create a variable file and place the values and we call from there.
+# Let's see how to do that -:
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+# Client Requirement -:
+-----------------------
+# For each shell script we need to provide a username:password and jenkins url so it's the issue so i don't wanna mention each and everytime.
+
+# Each and every script i don't wanna mention any username:password and Jenkins URL manually, how can we achieve this.
+
+# Solution -:
+------------
+# for that i create an one varibele and keep all these (Username:password and jenkisn url) details in one file so i'm going to keep files like.
+#* vi  jenkins-cli-config.txt
+------------------------------
+#   (Field 1) =  (Field 2)
+jenkinsURL=http://3.14.84.84:8080/
+jenkinsUser=jenkins-CLIuser
+jenkinsToken=465164dfd4656d5d6g5df5
+# save(esc,Shift:,wq!).
+
+> Now keep/move this file to where your jobs are running(where your jenkins-cli.jar)
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+> Now i want to get that those jenkins-cli values from here so for that one we can use (cut) command
+
+#> Instead of hardcoding the values directly we can use like -:
+#* > vi display.sh
+------------------
+#!/bin/bash
+jenkinsURL= `grep -i "jenkinsURL"(provide the variable name) jenkins-cli-config.txt(where your variable names) | cut -d(delimeter) "=" -f2(field 2)`
+jenkinsUsername=`grep -i "jenkinsUser"(provide the variable name) jenkins-cli-config.txt(where your variable names) | cut -d(delimeter) "=" -f2(field 2)`
+jenkinsToken=`grep -i "jenkinsToken"(provide the variable name) jenkins-cli-config.txt(where your variable names) | cut -d(delimeter) "=" -f2(field 2)`
+
+echo "Displaying all the jobs in jenkins serever"
+java -jar ./jenkins-cli.jar -auth jenkinsUsername:jenkinsToken -s jenkinsURL list-jobs
+echo "Displayed......"
+
+# save this (esc,shift:, wq!)
+> Like this we can use in all the servers. So that one place we can go and change the details. if in future if we wana change any url or username we go to configfile and do chnages it'll automatically change everywhere.
+> Instead of mentioning details on each server and mention in an one place(config file) provide the details and call/get the details from there as a variables.
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+#> I wanna create all jenkins scripts and i create main.sh for just executing a num to ececute that shell script How ? -:
+-------------------------------------------------------------------------------------------------------------------------
+#* vi main.sh  
+-------------
+echo "1 create a Job"
+echo "2 create a view"
+echo "3 create a user"
+echo "4 Display all the jobs in Jenkins Server"    # { I already write these 9 shell scripts, i give the number values to those scripts in main.sh file, i mention those script names below)
+echo "5 Display all the jobs in Perticular view"
+echo "6 Trigger/Build the job"
+echo "7 Display all the installed plugins"
+echo "8 Restart the Jenkins"
+echo "9 Jenkins version"
+
+echo "Please enter the number which task we wanna perform.."
+read NUM
+case "$NUM" in 
+     "1") sh createjob.sh
+     ;;
+     "2") sh createView.sh
+     ;;
+     "3") sh createUser.sh
+     ;;
+     "4") sh displayJobsinJenkins.sh
+     ;;
+     "5") sh displayJobsinView.sh
+     ;;
+     "6") sh buildJob.sh
+     ;;
+     "7") sh displayplugins.sh
+     ;;
+     "8") sh restartJenkins.sh
+     ;;
+     "9") sh jenkinsVersion.sh
+     ;;
+     *) echo "wrong choice !!!"     #{If i'm not passing the right value (1-9) it'll take a default pattern and display as a wrong pattern.}
+        echo "please select the correct choice"
+        exit 1
+	;;
+    esac
+---------
+#> once i execute this main.sh (sh main.sh) it'll dispaly the number with shell name once we enter the num(which shell we wanna execute it'll execute that shell.
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+# If you wanna create a job using jenkins-CLI > First we should prepare a one config.xml > bcs each job it's going to maintain some config.xml file > So that config.xml file we need to create.
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+#                                              :-UpStream and DownStream Jobs -:
+#                                             -----------------------------------
+
+# > For example i have an a requirement like i have two jobs...
+# > Jenkins-Dev job. 
+# > Jenkins-QA Job.
+# > Once the Jenkins-Dev job is successfully run then it has to trigger my Jenkins-QA job. bcs once Jenkins-Dev deployment is successfull it has to deploy on my Jenkins-QA env also.
+# > So inthis case Jenkins-Dev - it's an Upstream Job and Jenkins-QA - it's a DownStream job.
+
+# How can we do this (Freestyle project)(Manual process)-:
+----------------------------------------------------------
+# > By Uisng Conditions we can achive this 
+# > If we using console > Click on the job(DownStream Job)  > click on configure > Go to buid trigger oprions( Choose Build after other projects are built) > provide UpStreamjob name inside (project to watch) >,
+# > if you wanna mention multiple jobs here mentions ,,,(commas) to enter multiple jobs here, > then choose below options (based on your reuirements( trigger only if build is stable), (Trigger even if the build is unstable), & etc.
+# > Click on save & click on build (if pollscm/git webhook is activated  it'll automaticaly trigger).
+
+# How can we do this (pipeline project)(Pipeline process)-:
+-----------------------------------------------------------
+# > Go to Jenkins Dashboard > Click On Newitem > Provide name > Choose pipeline > Now go to pipeline and write script 
+  > node {
+             stage('BuildOtherjob')
+             {
+	       build 'masterslavetest'		 
+	     }
+}
+
+# > Copy job name which one you wanna tricgger > come to pipeline script > choose pipeline syntax > snippet Generator > inside sample step (choose build:build a job option) >
+# > provide job name (which we copied before) > (if you have any perameters choose perameters option) > click on generate pipeline script > copy the script > go back to your pipeline >,
+# > paste there > click on save > click on build now.
